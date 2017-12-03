@@ -1,18 +1,27 @@
 """Reverse proxy for Next Bus server"""
-from ConfigParser import ConfigParser
+import requests
 
-def load_config(path):
-	"""Load config from a config file"""
-	config = ConfigParser()
-	try:
-		config.read(path)
-	except Exception as e:
-		print("Bad configuration file name %s %s" % (path, e))
+##API ENDPOINTS##
+API_ENDPOINTS = {
+    "useShortTitles": "&useShortTitles=True",
+    "agencyList": ["agencyList"],
+    "routeList": ["routeList&a="],
+    "routeConfig": ["routeConfig&a=", "&r="],
+    "messages": ["messages&a=", "&r="],
+    "predictByStop": ["predictions&a=", "&r=", "&s="],
+    "predictByStopId": ["predictions&a=", "&stopId=", "&routeTag="],
+    "predictionsForMultiStops": ["predictionsForMultiStops&a=", "&stops="],
+    "vehicleLocations": ["vehicleLocations&a=", "&r=", "&t="],
+    "schedule": ["schedule&a=", "&r="],
+    "stats": ["stats"]
+}
 
-	config_dict = {s:dict(config.items(s)) for s in config.sections()}
+def createURL(config, endpoint):
+	url = config['proxy_config']['target_url'] + "/service/publicXMLFeed?command=" + API_ENDPOINTS[endpoint][0]
+	print ("URL::%s"%url)
+	return url
 
-	return config_dict
-		 
 if __name__ == '__main__':
 	print load_config("../config.ini")
- 
+#	config_dict  = load_config(path)
+	print http_request("http://webservices.nextbus.com/service/publicXMLFeed?command=agencyList") 
