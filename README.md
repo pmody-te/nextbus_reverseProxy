@@ -53,6 +53,7 @@ The `api/v1/stats` endpoint is particular to the state of reverse proxy
 |*queries*|List all the endpoints queried by the user along with the number of requests for each.|
 
 |*/api/v1/stats/reset*| Reset stats |
+|:---|:---|
 
 |End points| Description | 
 |:---|:---|
