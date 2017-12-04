@@ -51,6 +51,7 @@ The `api/v1/stats` endpoint is particular to the state of reverse proxy
 |:---:|:---|
 |*slow_requests*| Lists the endpoints which had response time higher a certain threshold along with the time taken.|
 |*queries*|List all the endpoints queried by the user along with the number of requests for each.|
+|*/api/v1/stats/reset*| Reset stats |
 
 |End points| Description | 
 |:---|:---|
