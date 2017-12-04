@@ -4,7 +4,8 @@ NextBus Reverse Proxy
 A simple reverse proxy for San Francisco's public transportation powered by NextBus's XML feed.   
 
 
-## Usage run locally 
+## Usage 
+To run locally: 
 
 ```bash
 # run reverseProxy server
