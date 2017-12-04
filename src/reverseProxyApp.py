@@ -1,24 +1,43 @@
+""" Reverse proxy for Next Bus server using flask """
+
 import flask 
 from flask import Response,g,request
 import reverseProxy
 import tools 
-import logging 
 import time 
 import json
 from flask_caching import Cache
+from redis import ConnectionError
 from redis import Redis
+import logging 
 
+config 	= 	tools.load_config("config.ini")
+
+##Setup Logging 
+logging.basicConfig()
+logger = logging.getLogger('reverseProxyApp')
+
+""" Initializing the flask app with redis caching """
 APP 	= 	flask.Flask(__name__)
-config 	= 	tools.load_config("/Users/pranoymody/Desktop/Code/reverseProxy/config.ini")
+redis_host = config['proxy_config']['redis_host']
+redis_port = config['proxy_config']['redis_port']
 cache 	=	 Cache(APP, config={'CACHE_TYPE': 'redis',
-	'CACHE_REDIS_HOST': config['proxy_config']['redis_host'],
-	'CACHE_REDIS_PORT':config['proxy_config']['redis_port'],
+	'CACHE_REDIS_HOST': redis_host,
+	'CACHE_REDIS_PORT': redis_port,
 	'CACHE_DEFAULT_TIMEOUT':config['proxy_config']['cache_timeout']})
 slow_requests_threshold = float (config['proxy_config']['slow_requests_threshold'])
-redis	=	Redis( host=config['proxy_config']['redis_host'] , port=config['proxy_config']['redis_port'])
+redis	=	Redis( host=redis_host , port=redis_port )
+try:
+	redis.ping()
+except ConnectionError:
+	logger.error("Redis isn't available, check the server %s:%s and try again"%(redis_host,redis_port))
+	exit(0)
+
+
 
 @APP.before_request
 def before_request():
+	"""Start request timer for metrics"""
 	g.start = time.time()
 
 @APP.route('/api/v1/agencyList')
@@ -98,13 +117,9 @@ def vehicleLocations(agency,route,time):
 @APP.route('/api/v1/predictionsForMultiStops/<agency>/<stops>')
 @cache.cached()
 def predictionsForMultiStops(agency,stops):
-	print agency
-	print stops
-	print stops.split("&")
 	url = reverseProxy.createURL(config,"predictionsForMultiStops") %(agency)
 	for stop in stops.split("&"):
 		url = url + "&stops=%s"%stop
-	print url
 	redis.incr('predictionsForMultiStops')
 	xml = tools.http_request(url)
 	return Response(xml, mimetype='text/xml')
@@ -116,23 +131,27 @@ def metrics():
 
 @APP.route('/api/v1/stats/reset')
 def reset():
+	"""Flushes all the keys from the redis db"""
 	redis.flushall()
 	return Response("Database has been flushed\n", mimetype='text') 
 
 @APP.after_request
 def after_request(response):
-    request_time = time.time() - g.start
-    print "Exec time: %ss" % str(request_time)
-    request_time = round(request_time*1000)/1000
-    if request_time > slow_requests_threshold :
-    	redis.hset('slow_requests',request.path,str(request_time)+"s")
-    if request.path != "/api/v1/stats/reset" :
-    	print request.path
-    	redis.hincrby('queries', request.path,1)
- #   if (response.response):
- #       response.response[0] = response.response[0].replace('__EXECUTION_TIME__', str(request_time))
-    return response
+	""" Calculates the request time and checks for slow requests """
+	request_time = time.time() - g.start
+	logger.debug("Exec time: %ss" % str(request_time))
+	request_time = round(request_time*1000)/1000
+	if request_time > slow_requests_threshold :
+		redis.hset('slow_requests',request.path,str(request_time)+"s")
+	if request.path != "/api/v1/stats/reset" :
+		logger.debug("Requested Path: "+request.path)
+		redis.hincrby('queries', request.path,1)
+	return response
 
 if __name__ == '__main__':
-    APP.debug=True
-    APP.run()
+	APP.debug=True
+	try:
+		app_port = int(config['proxy_config']['app_port'])
+	except Exception as e:
+		logger.error("Bad configuration file, enter a valid PORT number %s %s" % (config['proxy_config']['app_port'], e))
+	APP.run(host ='0.0.0.0' , port = app_port)

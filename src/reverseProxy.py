@@ -1,6 +1,5 @@
 """Reverse proxy for Next Bus server"""
 import requests
-
 ##API ENDPOINTS##
 API_ENDPOINTS = {
     "useShortTitles": "&useShortTitles=True",
@@ -18,9 +17,9 @@ API_ENDPOINTS = {
 }
 
 def createURL(config, endpoint):
+	"""creates the query url using the API endpoints and the target url for the API """
 	url = config['proxy_config']['target_url'] + "/service/publicXMLFeed?command=" + API_ENDPOINTS[endpoint][0]
 	return url
 
 if __name__ == '__main__':
-	print load_config("../config.ini")
-#	config_dict  = load_config(path)
+	print API_ENDPOINTS
