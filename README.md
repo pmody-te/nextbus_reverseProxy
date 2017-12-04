@@ -31,7 +31,7 @@ $> ./test.sh
 
 **Design Choices**
 1. Redis was the choice for caching, it supports `key:value` mappings
-	* Redis gives one a scalable cache infrastructure as well as rich representations to cache objects.
+	* Redis gives one a scalable cache infrastructure as well as rich representations to cache objects.The metrics are also stored in the Redis database so that all the continers are using the same backend storage and advertising the same statistics.
 2. Flask as it is a light micro web framework, which is easy to impliment.
 	* Flask implements the most commonly-used core components of a web application framework, like URL routing, request and response objects, and templates which encompasses all that is required. 
 
@@ -52,7 +52,9 @@ The `api/v1/stats` endpoint is particular to the state of reverse proxy
 |*slow_requests*| Lists the endpoints which had response time higher a certain threshold along with the time taken.|
 |*queries*|List all the endpoints queried by the user along with the number of requests for each.|
 
-|*/api/v1/stats/reset*| Reset stats |
+To reset all the metrics and stats in the redisdb : 
+
+|*/api/v1/stats/reset*| Reset metrics and stats |
 |:---|:---|
 
 |End points| Description | 
