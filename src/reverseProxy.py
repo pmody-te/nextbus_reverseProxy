@@ -18,7 +18,6 @@ API_ENDPOINTS = {
 
 def createURL(config, endpoint):
 	url = config['proxy_config']['target_url'] + "/service/publicXMLFeed?command=" + API_ENDPOINTS[endpoint][0]
-	print ("URL::%s"%url)
 	return url
 
 if __name__ == '__main__':

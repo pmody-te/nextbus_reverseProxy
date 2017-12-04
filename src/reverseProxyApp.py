@@ -7,8 +7,11 @@ import time
 from flask_caching import Cache
 
 APP = flask.Flask(__name__)
-cache = Cache(APP, config={'CACHE_TYPE': 'redis','CACHE_REDIS_HOST': 'localhost','CACHE_REDIS_PORT':'6379','CACHE_DEFAULT_TIMEOUT':'5'})
 config = tools.load_config("/Users/pranoymody/Desktop/Code/reverseProxy/config.ini")
+cache = Cache(APP, config={'CACHE_TYPE': 'redis',
+	'CACHE_REDIS_HOST': config['proxy_config']['redis_host'],
+	'CACHE_REDIS_PORT':config['proxy_config']['redis_port'],
+	'CACHE_DEFAULT_TIMEOUT':config['proxy_config']['cache_timeout']})
 
 
 @APP.before_request
@@ -19,6 +22,7 @@ def before_request():
 @cache.cached()
 def agencyList():
 	url = reverseProxy.createURL(config,"agencyList")
+	print ("URL::%s"%url)
 	xml = tools.http_request(url)
 	return Response(xml, mimetype='text/xml')
 
@@ -26,6 +30,7 @@ def agencyList():
 @cache.cached()
 def routeList(agency):
 	url = reverseProxy.createURL(config,"routeList") + agency
+	print ("URL::%s"%url)
 	xml = tools.http_request(url)
 	return Response(xml, mimetype='text/xml')
 
