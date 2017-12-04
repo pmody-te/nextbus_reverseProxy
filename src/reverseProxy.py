@@ -23,4 +23,3 @@ def createURL(config, endpoint):
 if __name__ == '__main__':
 	print load_config("../config.ini")
 #	config_dict  = load_config(path)
-	print http_request("http://webservices.nextbus.com/service/publicXMLFeed?command=agencyList") 
