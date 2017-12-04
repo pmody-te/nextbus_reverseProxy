@@ -124,7 +124,7 @@ def predictionsForMultiStops(agency,stops):
 	xml = tools.http_request(url)
 	return Response(xml, mimetype='text/xml')
 
-@APP.route('/api/v1/stats/')
+@APP.route('/api/v1/stats')
 def metrics():
 	metrics = {"queries":redis.hgetall('queries'),"slow_requests":redis.hgetall('slow_requests')}
 	return Response(json.dumps(metrics,indent=2), mimetype='application/json')
