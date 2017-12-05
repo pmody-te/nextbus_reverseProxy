@@ -14,7 +14,8 @@ import logging
 config 	= 	tools.load_config("config.ini")
 
 ##Setup Logging 
-logging.basicConfig()
+#logging.basicConfig( filename='logs/nextbusApp.log',level=logging.DEBUG )
+logging.basicConfig(level=logging.DEBUG )
 logger = logging.getLogger('reverseProxyApp')
 
 """ Initializing the flask app with redis caching """
