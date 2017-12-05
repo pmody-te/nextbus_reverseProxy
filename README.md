@@ -39,6 +39,7 @@ $> ./test.sh
 
 
 **Configuration Settings**
+
  You can configure reverseProxy in `config.ini`
  
   - "redis_host" & "redis_port" for caching and storing metrics 
