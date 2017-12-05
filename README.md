@@ -20,6 +20,7 @@ $> ./test.sh
 3. curl localhost:8080/api/v1/agencyList
 
 ## Dependencies
+
 - **Used Python Flask, the micro web framework as the reverse proxy broker because it is lightweight and easy to implement
 - **Redis for caching the responses of NextBus XML feed and storing the api metrics** 
 - **Python 2.7**
@@ -38,10 +39,11 @@ $> ./test.sh
 
 
 **Configuration Settings**
-You can configure reverseProxy in  `config.ini`
-	- "redis_host" & "redis_port" for caching and storing metrics 
-	- "slow_requests_threshold"  
-	- "cache_timeout" 
+ You can configure reverseProxy in `config.ini`
+ 
+  - "redis_host" & "redis_port" for caching and storing metrics 
+  - "slow_requests_threshold"  
+  - "cache_timeout" 
 
 ## Reverseproxy API Endpoints 
 
